@@ -1,0 +1,85 @@
+/* ------------------------------------------------------------------ */
+/* Landing page — hero overrides                                        */
+/* ------------------------------------------------------------------ */
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 5rem 2rem 4rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    gap: 0;
+}
+
+.hero-inner {
+    max-width: 640px;
+}
+
+.hero-subtitle {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-actions {
+    justify-content: center;
+}
+
+.hero-visual {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 3rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Redesigned mock card                                                 */
+/* ------------------------------------------------------------------ */
+
+.mock-card {
+    max-width: 560px;
+    width: 100%;
+}
+
+.mock-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.mock-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mock-stat-value {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--ink);
+    line-height: 1;
+}
+
+.mock-stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.mock-stat-note {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+}
+
+.mock-stat-note--up { color: var(--accent); }
+
+.mock-bar-row {
+    grid-template-columns: 72px 1fr;
+}
