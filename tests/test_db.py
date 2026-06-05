@@ -121,3 +121,34 @@ def test_seed_db_covers_all_categories(app_ctx):
     expected = {"Food", "Transport", "Bills", "Health", "Entertainment", "Shopping", "Other"}
     assert expected.issubset(categories)
     db.close()
+
+
+# ── Constraint enforcement ────────────────────────────────────────────────────
+
+def test_duplicate_email_raises_integrity_error(app_ctx):
+    init_db()
+    db = get_db()
+    db.execute(
+        "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+        ("A", "dup@test.com", "hash"),
+    )
+    db.commit()
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+            ("B", "dup@test.com", "hash"),
+        )
+        db.commit()
+    db.close()
+
+
+def test_invalid_user_id_raises_integrity_error(app_ctx):
+    init_db()
+    db = get_db()
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            "INSERT INTO expenses (user_id, amount, category, date) VALUES (?, ?, ?, ?)",
+            (9999, 10.0, "Food", "2026-06-01"),
+        )
+        db.commit()
+    db.close()
