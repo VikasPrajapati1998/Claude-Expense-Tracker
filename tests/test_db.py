@@ -7,7 +7,8 @@ from database.db import get_db, init_db, seed_db
 
 def test_get_db_returns_connection(app_ctx):
     db = get_db()
-    assert db is not None
+    result = db.execute("SELECT 1").fetchone()[0]
+    assert result == 1
     db.close()
 
 
@@ -27,5 +28,5 @@ def test_get_db_uses_row_factory(app_ctx):
 def test_get_db_foreign_keys_on(app_ctx):
     db = get_db()
     result = db.execute("PRAGMA foreign_keys").fetchone()
-    assert result[0] == 1
+    assert result["foreign_keys"] == 1
     db.close()
