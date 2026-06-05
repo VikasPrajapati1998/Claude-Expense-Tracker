@@ -1,5 +1,28 @@
-# Students will write this file in Step 1 — Database Setup
-# This file should contain:
-#   get_db()   — returns a SQLite connection with row_factory and foreign keys enabled
-#   init_db()  — creates all tables using CREATE TABLE IF NOT EXISTS
-#   seed_db()  — inserts sample data for development
+import sqlite3
+from flask import current_app
+from werkzeug.security import generate_password_hash
+
+
+def get_db():
+    db = sqlite3.connect(current_app.config.get("DATABASE", "spendly.db"))
+    db.row_factory = sqlite3.Row
+    db.execute("PRAGMA foreign_keys = ON")
+    return db
+
+
+def init_db():
+    db = get_db()
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS users (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            name          TEXT    NOT NULL,
+            email         TEXT    NOT NULL UNIQUE,
+            password_hash TEXT    NOT NULL
+        );
+    """)
+    db.commit()
+    db.close()
+
+
+def seed_db():
+    pass
