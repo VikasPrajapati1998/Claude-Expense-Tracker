@@ -38,4 +38,32 @@ def init_db():
 
 
 def seed_db():
-    pass
+    db = get_db()
+    existing = db.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    if existing > 0:
+        db.close()
+        return
+
+    password_hash = generate_password_hash("demo123")
+    db.execute(
+        "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+        ("Demo User", "demo@spendly.com", password_hash),
+    )
+    user_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+
+    expenses = [
+        (user_id, 45.50,  "Food",          "2026-06-01", "Groceries"),
+        (user_id, 12.00,  "Transport",     "2026-06-02", "Bus pass"),
+        (user_id, 120.00, "Bills",         "2026-06-03", "Electricity bill"),
+        (user_id, 30.00,  "Health",        "2026-06-04", "Pharmacy"),
+        (user_id, 25.00,  "Entertainment", "2026-06-05", "Netflix"),
+        (user_id, 80.00,  "Shopping",      "2026-06-05", "Clothing"),
+        (user_id, 15.00,  "Other",         "2026-06-05", "Miscellaneous"),
+        (user_id, 22.50,  "Food",          "2026-06-05", "Restaurant dinner"),
+    ]
+    db.executemany(
+        "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
+        expenses,
+    )
+    db.commit()
+    db.close()

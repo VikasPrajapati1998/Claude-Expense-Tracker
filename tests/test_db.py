@@ -61,3 +61,63 @@ def test_init_db_is_idempotent(app_ctx):
     count = db.execute("SELECT COUNT(*) FROM users").fetchone()[0]
     assert count == 0
     db.close()
+
+
+# ── seed_db() ─────────────────────────────────────────────────────────────────
+
+def test_seed_db_inserts_demo_user(app_ctx):
+    init_db()
+    seed_db()
+    db = get_db()
+    user = db.execute(
+        "SELECT * FROM users WHERE email = ?", ("demo@spendly.com",)
+    ).fetchone()
+    assert user is not None
+    assert user["name"] == "Demo User"
+    db.close()
+
+
+def test_seed_db_hashes_password(app_ctx):
+    from werkzeug.security import check_password_hash
+    init_db()
+    seed_db()
+    db = get_db()
+    user = db.execute(
+        "SELECT password_hash FROM users WHERE email = ?", ("demo@spendly.com",)
+    ).fetchone()
+    assert check_password_hash(user["password_hash"], "demo123")
+    db.close()
+
+
+def test_seed_db_inserts_eight_expenses(app_ctx):
+    init_db()
+    seed_db()
+    db = get_db()
+    count = db.execute("SELECT COUNT(*) FROM expenses").fetchone()[0]
+    assert count == 8
+    db.close()
+
+
+def test_seed_db_no_duplicates_on_repeat(app_ctx):
+    init_db()
+    seed_db()
+    seed_db()   # second call must skip
+    db = get_db()
+    user_count = db.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    expense_count = db.execute("SELECT COUNT(*) FROM expenses").fetchone()[0]
+    assert user_count == 1
+    assert expense_count == 8
+    db.close()
+
+
+def test_seed_db_covers_all_categories(app_ctx):
+    init_db()
+    seed_db()
+    db = get_db()
+    categories = {
+        row["category"]
+        for row in db.execute("SELECT DISTINCT category FROM expenses").fetchall()
+    }
+    expected = {"Food", "Transport", "Bills", "Health", "Entertainment", "Shopping", "Other"}
+    assert expected.issubset(categories)
+    db.close()
